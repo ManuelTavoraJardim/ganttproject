@@ -110,6 +110,10 @@ public class TaskImpl implements Task {
 
   private final TaskDependencySlice myDependencySliceAsDependee;
 
+  private static Color NON_URGENT_COLOR = new Color(000, 200, 000);
+  private static Color URGENT_COLOR = new Color(200, 200, 000);
+  private static Color VERY_URGENT_COLOR = new Color(200, 000, 000);
+
   private boolean myEventsEnabled;
 
   private final TaskHierarchyItem myTaskHierarchyItem;
@@ -456,7 +460,37 @@ public class TaskImpl implements Task {
       if (isMilestone() || myManager.getTaskHierarchy().hasNestedTasks(this)) {
         result = Color.BLACK;
       } else {
-        result = myManager.getConfig().getDefaultColor();
+        GanttCalendar todayDateGregCal = CalendarFactory.createGanttCalendar();
+
+        if (todayDateGregCal.compareTo(getStart()) < 0 || todayDateGregCal.compareTo(getEnd()) >= 0) {
+          result = myManager.getConfig().getDefaultColor();
+        } else {
+          int daysLeftForTaskCompletion = (int)((getEnd().getTimeInMillis() - todayDateGregCal.getTimeInMillis()) / (1000 * 60 * 60 * 24));
+          if (getDuration().getLength() > 3 && daysLeftForTaskCompletion >= 0) {
+            if (daysLeftForTaskCompletion < getDuration().getLength() / 3) {
+              result = VERY_URGENT_COLOR;
+            } else if (daysLeftForTaskCompletion < getDuration().getLength() * 2 / 3) {
+              result = URGENT_COLOR;
+            } else {
+              result = NON_URGENT_COLOR;}
+          }
+          else {
+            switch (daysLeftForTaskCompletion) {
+              case 1:
+                result = VERY_URGENT_COLOR;
+                break;
+              case 2:
+                result = URGENT_COLOR;
+                break;
+              case 3:
+                result = NON_URGENT_COLOR;
+                break;
+              default:
+                result = Color.BLACK;
+                break;
+            }
+          }
+        }
       }
     }
     return result;
