@@ -219,7 +219,7 @@ public class GanttProjectImpl implements IGanttProject {
     return myResourceManager.getCustomPropertyManager();
   }
 
-  ;
+
 
   private static Color DEFAULT_TASK_COLOR = new Color(140, 182, 206);
 

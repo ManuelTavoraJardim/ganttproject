@@ -187,9 +187,9 @@ public class CriticalPathAlgorithmImpl implements CriticalPathAlgorithm {
     private void calculateLatestDates(Node curNode) {
       ourLogger.fine("Calculating latest dates for:" + curNode);
       curNode.lft = findLatestFinishTime(myTask_Node, curNode);
-      curNode.lst = myCalendar.shiftDate(curNode.lft,
-          myTaskManager.createLength(-curNode.task.getDuration().getLength()));
+      curNode.lst = myCalendar.shiftDate(curNode.lft, myTaskManager.createLength(-curNode.task.getDuration().getLength()));
       ourLogger.fine("latest start date=" + curNode.lst);
+      curNode.task.setSlack(curNode.lft);
     }
 
     private void enqueueDependees(LinkedList<Node> newQueue, Node curNode) {

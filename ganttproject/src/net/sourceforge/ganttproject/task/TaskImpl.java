@@ -60,11 +60,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author bard
@@ -119,6 +117,8 @@ public class TaskImpl implements Task {
   private final TaskHierarchyItem myTaskHierarchyItem;
 
   private ShapePaint myShape;
+
+  private int mySlack = 0;
 
   private Color myColor;
 
@@ -352,9 +352,14 @@ public class TaskImpl implements Task {
 
   @Override
   public GanttCalendar getStart() {
-    if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
-      return myMutator.getStart();
+    GregorianCalendar today = new GregorianCalendar();
+    /*if(this.myCompletionPercentage == 0 && mySlack != 0 && myStart.compareTo(today) < 0){
+
+      return myStart;
     }
+    else*/ if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
+      return myMutator.getStart();
+    }else
     return myStart;
   }
 
@@ -461,7 +466,6 @@ public class TaskImpl implements Task {
         result = Color.BLACK;
       } else {
         GanttCalendar todayDateGregCal = CalendarFactory.createGanttCalendar();
-
         if (todayDateGregCal.compareTo(getStart()) < 0 || todayDateGregCal.compareTo(getEnd()) >= 0) {
           result = myManager.getConfig().getDefaultColor();
         } else {
@@ -479,14 +483,11 @@ public class TaskImpl implements Task {
               case 1:
                 result = VERY_URGENT_COLOR;
                 break;
-              case 2:
-                result = URGENT_COLOR;
-                break;
               case 3:
                 result = NON_URGENT_COLOR;
                 break;
               default:
-                result = Color.BLACK;
+                result = URGENT_COLOR;
                 break;
             }
           }
@@ -1310,6 +1311,16 @@ public class TaskImpl implements Task {
     public void setCalculated(boolean calculated) {
       isCalculated = calculated;
     }
+  }
+
+  @Override
+  public void setSlack(Date lft) {
+    mySlack = (int)((lft.getTime() - getEnd().getTimeInMillis()) / (1000 * 60 * 60 * 24));
+  }
+
+  @Override
+  public int getSlack() {
+    return mySlack;
   }
 
   @Override

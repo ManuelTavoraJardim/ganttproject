@@ -26,6 +26,7 @@ import net.sourceforge.ganttproject.task.dependency.TaskDependencySlice;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,7 +35,10 @@ import java.util.List;
  * @author bard
  */
 public interface Task extends MutableTask {
-  /** Available task priorities */
+    void setSlack(Date lft);
+    int getSlack();
+
+    /** Available task priorities */
   public enum Priority {
     LOWEST("3"), LOW("0"), NORMAL("1"), HIGH("2"), HIGHEST("4");
 
