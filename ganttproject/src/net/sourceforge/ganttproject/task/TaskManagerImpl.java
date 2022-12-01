@@ -10,11 +10,7 @@ import biz.ganttproject.core.calendar.GPCalendarListener;
 import biz.ganttproject.core.chart.scene.BarChartActivity;
 import biz.ganttproject.core.chart.scene.gantt.ChartBoundsAlgorithm;
 import biz.ganttproject.core.chart.scene.gantt.ChartBoundsAlgorithm.Result;
-import biz.ganttproject.core.option.ColorOption;
-import biz.ganttproject.core.option.DefaultEnumerationOption;
-import biz.ganttproject.core.option.DefaultStringOption;
-import biz.ganttproject.core.option.EnumerationOption;
-import biz.ganttproject.core.option.StringOption;
+import biz.ganttproject.core.option.*;
 import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.GanttCalendar;
 import biz.ganttproject.core.time.TimeDuration;
@@ -38,6 +34,7 @@ import net.sourceforge.ganttproject.ProjectEventListener;
 import net.sourceforge.ganttproject.gui.NotificationChannel;
 import net.sourceforge.ganttproject.gui.NotificationItem;
 import net.sourceforge.ganttproject.gui.NotificationManager;
+import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.options.model.GP1XOptionConverter;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
@@ -138,6 +135,14 @@ public class TaskManagerImpl implements TaskManager {
   private final SchedulerImpl myScheduler = new SchedulerImpl(myDependencyGraph, myHierarchySupplier);
 
   private boolean areEventsEnabled = true;
+
+  private boolean isColorUrgencyOn;
+
+  private boolean isAutoShiftDatesOn;
+
+  private final ColorUrgencyOption myColorUrgencyOption = new ColorUrgencyOption();
+
+  private final AutoShiftDatesOption myAutoShiftDatesOption = new AutoShiftDatesOption();
 
   private static class TaskMap {
     private final Map<Integer, Task> myId2task = new HashMap<Integer, Task>();
@@ -1258,4 +1263,88 @@ public class TaskManagerImpl implements TaskManager {
   public DependencyGraph getDependencyGraph() {
     return myDependencyGraph;
   }
+
+  public boolean isColorUrgencyOn() {
+    return isColorUrgencyOn;
+  }
+
+  public void setColorUrgencyOn(boolean ColorUrgency) {
+    isColorUrgencyOn = ColorUrgency;
+  }
+
+  public boolean isAutoShiftDatesOn() {
+    return isAutoShiftDatesOn;
+  }
+
+  public void setAutoShiftDatesOn(boolean AutoShiftDatesOn) {
+    isAutoShiftDatesOn = AutoShiftDatesOn;
+  }
+
+  class ColorUrgencyOption extends DefaultBooleanOption implements GP1XOptionConverter {
+    ColorUrgencyOption() {
+      super("updateColors");
+    }
+
+    @Override
+    public String getTagName() {
+      return "colorurgency";
+    }
+
+    @Override
+    public String getAttributeName() {
+      return "value";
+    }
+
+    @Override
+    public void loadValue(String legacyValue) {
+      lock();
+      loadPersistentValue(legacyValue);
+      commit();
+    }
+
+    @Override
+    public void commit() {
+      super.commit();
+      setColorUrgencyOn(isChecked());
+    }
+  };
+
+  class AutoShiftDatesOption extends DefaultBooleanOption implements GP1XOptionConverter {
+    AutoShiftDatesOption() {
+      super("updateDates");
+    }
+
+    @Override
+    public String getTagName() {
+      return "autoshiftdate";
+    }
+
+    @Override
+    public String getAttributeName() {
+      return "value";
+    }
+
+    @Override
+    public void loadValue(String legacyValue) {
+      lock();
+      loadPersistentValue(legacyValue);
+      commit();
+    }
+
+    @Override
+    public void commit() {
+      super.commit();
+      setAutoShiftDatesOn(isChecked());
+    }
+  };
+
+  public BooleanOption getColorUrgencyOption() {
+    return myColorUrgencyOption;
+  }
+
+  public BooleanOption getAutoShiftDatesOption() {
+    return myAutoShiftDatesOption;
+  }
+
 }
+

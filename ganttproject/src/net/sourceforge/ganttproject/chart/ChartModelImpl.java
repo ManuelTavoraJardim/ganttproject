@@ -50,6 +50,8 @@ public class ChartModelImpl extends ChartModelBase {
 
   private final GPOptionGroup myTaskDefaultsOptions;
 
+  private final GPOptionGroup myAutoTaskOptions;
+
   private Set<Task> myHiddenTasks;
 
   private List<GanttPreviousStateTask> myBaseline;
@@ -71,6 +73,13 @@ public class ChartModelImpl extends ChartModelBase {
         "hardness.strong");
     myTaskDefaultsOptions.setI18Nkey(OptionsPageBuilder.I18N.getCanonicalOptionValueLabelKey("Rubber"),
         "hardness.rubber");
+    // Custom Options
+    myAutoTaskOptions = new ChartOptionGroup( "myChartTaskOptions",
+            new GPOption[] { taskManager.getColorUrgencyOption(), taskManager.getAutoShiftDatesOption()},
+            getOptionEventDispatcher());
+    myAutoTaskOptions.setI18Nkey("optionGroup.myChartTaskOptions.label", "Tasks");
+    myAutoTaskOptions.setI18Nkey("option.updateColors.label", "Color Urgency");
+    myAutoTaskOptions.setI18Nkey("option.updateDates.label", "Automatic Dates");
 
   }
 
@@ -209,6 +218,7 @@ public class ChartModelImpl extends ChartModelBase {
     GPOptionGroup[] superGroups = super.getChartOptionGroups();
     List<GPOptionGroup> result = Lists.newArrayList();
     result.add(myTaskDefaultsOptions);
+    result.add(myAutoTaskOptions);
     result.addAll(Arrays.asList(superGroups));
     result.add(myTaskRendererImpl.getLabelOptions());
     return result.toArray(new GPOptionGroup[result.size()]);

@@ -20,15 +20,14 @@ package net.sourceforge.ganttproject.task;
 
 import biz.ganttproject.core.calendar.GPCalendarCalc;
 import biz.ganttproject.core.calendar.GPCalendarListener;
-import biz.ganttproject.core.option.ColorOption;
-import biz.ganttproject.core.option.EnumerationOption;
-import biz.ganttproject.core.option.StringOption;
+import biz.ganttproject.core.option.*;
 import biz.ganttproject.core.time.TimeDuration;
 import biz.ganttproject.core.time.TimeUnit;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttTask;
 import net.sourceforge.ganttproject.ProjectEventListener;
+import net.sourceforge.ganttproject.gui.options.model.GP1XOptionConverter;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.Task.Priority;
@@ -241,4 +240,15 @@ public interface TaskManager {
   ProjectEventListener getProjectListener();
 
   GPCalendarListener getCalendarListener();
+
+  boolean isColorUrgencyOn();
+
+  void setColorUrgencyOn(boolean AutoPriorityOn);
+
+  boolean isAutoShiftDatesOn();
+
+  void setAutoShiftDatesOn(boolean AutoShiftDatesOn);
+
+  BooleanOption getColorUrgencyOption();
+  BooleanOption getAutoShiftDatesOption();
 }
