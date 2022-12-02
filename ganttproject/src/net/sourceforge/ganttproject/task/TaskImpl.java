@@ -352,19 +352,44 @@ public class TaskImpl implements Task {
 
   @Override
   public GanttCalendar getStart() {
+    /*
     GregorianCalendar today = new GregorianCalendar();
-    /*if(this.myCompletionPercentage == 0 && mySlack != 0 && myStart.compareTo(today) < 0){
+
+    //int durationInMillis = getDuration().getLength() * 1000*60*60*24;
+    int toAddInMillis = (int)(today.getTimeInMillis() - myStart.getTimeInMillis());
+
+    if(this.myCompletionPercentage == 0 && mySlack != 0 && myStart.compareTo(today) < 0){
+      //GanttCalendar start = myStart;
+      myStart.setTimeInMillis(today.getTimeInMillis());
+      setStart(myStart);
+      //myMutator.setStart(myStart);
+
+      myEnd.setTimeInMillis(myEnd.getTimeInMillis() + toAddInMillis);
+      setEnd(myEnd);
+      //Date newEnd = shiftDate(today.getTime(), getDuration());
+      //myEnd.setTime(newEnd);
+
+      //recalculateActivities();
 
       return myStart;
     }
-    else*/ if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
+    else if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
       return myMutator.getStart();
     }else
     return myStart;
+
+    */
+
+    if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
+        return myMutator.getStart();
+      }
+      return myStart;
+
   }
 
   @Override
   public GanttCalendar getEnd() {
+    // TODO: se passar do ultimo dia e a percentagem de completude for != 100% e houver slack, aumenta a duracao 1 dia, assim como a data final
     GanttCalendar result = null;
     if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
       result = myMutator.getEnd();
