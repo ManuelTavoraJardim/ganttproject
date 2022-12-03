@@ -492,7 +492,6 @@ public class TaskImpl implements Task {
   @Override
   public Color getColor() {
     Color result = myColor;
-
     if (myManager.isColorUrgencyOn()){
       GanttCalendar todayDateGregCal = CalendarFactory.createGanttCalendar();
       if (todayDateGregCal.compareTo(getStart()) < 0 || todayDateGregCal.compareTo(getEnd()) >= 0) {
