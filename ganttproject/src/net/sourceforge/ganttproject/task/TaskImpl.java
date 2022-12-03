@@ -352,7 +352,7 @@ public class TaskImpl implements Task {
 
   @Override
   public GanttCalendar getStart() {
-    /*
+
     GregorianCalendar today = new GregorianCalendar();
 
     //int durationInMillis = getDuration().getLength() * 1000*60*60*24;
@@ -364,13 +364,12 @@ public class TaskImpl implements Task {
       setStart(myStart);
       //myMutator.setStart(myStart);
 
-      myEnd.setTimeInMillis(myEnd.getTimeInMillis() + toAddInMillis);
-      setEnd(myEnd);
+      //myEnd.setTimeInMillis(myEnd.getTimeInMillis() + toAddInMillis);
+      //setEnd(myEnd);
       //Date newEnd = shiftDate(today.getTime(), getDuration());
       //myEnd.setTime(newEnd);
 
       //recalculateActivities();
-
       return myStart;
     }
     else if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
@@ -378,18 +377,19 @@ public class TaskImpl implements Task {
     }else
     return myStart;
 
-    */
+    /*
 
     if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
         return myMutator.getStart();
       }
       return myStart;
-
+*/
   }
 
   @Override
   public GanttCalendar getEnd() {
     // TODO: se passar do ultimo dia e a percentagem de completude for != 100% e houver slack, aumenta a duracao 1 dia, assim como a data final
+
     GanttCalendar result = null;
     if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
       result = myMutator.getEnd();
@@ -399,6 +399,13 @@ public class TaskImpl implements Task {
         myEnd = calculateEnd();
       }
       result = myEnd;
+    }
+    GregorianCalendar today = new GregorianCalendar();
+    if(this.myCompletionPercentage != 100 && mySlack != 0 && myEnd.compareTo(today) < 0) {
+      today.setTimeInMillis((today.getTimeInMillis()) + 1000*60*60*24);
+      myEnd.setTimeInMillis(today.getTimeInMillis());
+      setEnd(myEnd);
+      return myEnd;
     }
     return result;
   }
@@ -1023,11 +1030,11 @@ public class TaskImpl implements Task {
 
   @Override
   public void setStart(GanttCalendar start) {
-    Date closestWorkingStart = myManager.findClosestWorkingTime(start.getTime());
-    start.setTime(closestWorkingStart);
-    myStart = start;
-    recalculateActivities();
-    adjustNestedTasks();
+      Date closestWorkingStart = myManager.findClosestWorkingTime(start.getTime());
+      start.setTime(closestWorkingStart);
+      myStart = start;
+      recalculateActivities();
+      adjustNestedTasks();
   }
 
   private void adjustNestedTasks() {
