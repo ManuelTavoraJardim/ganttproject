@@ -400,7 +400,7 @@ public class TaskImpl implements Task {
       result = myEnd;
     }
     GregorianCalendar today = new GregorianCalendar();
-    if(this.myCompletionPercentage != 100 && mySlack != 0 && myEnd.compareTo(today) < 0) {
+    if(myManager.isAutoShiftDatesOn() && this.myCompletionPercentage != 100 && this.myCompletionPercentage > 0 && mySlack != 0 && myEnd.compareTo(today) < 0) {
       Date newEnd = myManager.findClosestWorkingTime(today.getTime());
       myEnd.setTime(newEnd);
       setEnd(myEnd);
@@ -492,37 +492,42 @@ public class TaskImpl implements Task {
   @Override
   public Color getColor() {
     Color result = myColor;
-    if (result == null) {
-      if (isMilestone() || myManager.getTaskHierarchy().hasNestedTasks(this)) {
-        result = Color.BLACK;
+
+    if (myManager.isColorUrgencyOn()){
+      GanttCalendar todayDateGregCal = CalendarFactory.createGanttCalendar();
+      if (todayDateGregCal.compareTo(getStart()) < 0 || todayDateGregCal.compareTo(getEnd()) >= 0) {
+        result = myManager.getConfig().getDefaultColor();
       } else {
-        GanttCalendar todayDateGregCal = CalendarFactory.createGanttCalendar();
-        if (todayDateGregCal.compareTo(getStart()) < 0 || todayDateGregCal.compareTo(getEnd()) >= 0) {
-          result = myManager.getConfig().getDefaultColor();
-        } else {
-          int daysLeftForTaskCompletion = (int)((getEnd().getTimeInMillis() - todayDateGregCal.getTimeInMillis()) / (1000 * 60 * 60 * 24));
-          if (getDuration().getLength() > 3 && daysLeftForTaskCompletion >= 0) {
-            if (daysLeftForTaskCompletion < getDuration().getLength() / 3) {
+        int daysLeftForTaskCompletion = (int)((getEnd().getTimeInMillis() - todayDateGregCal.getTimeInMillis()) / (1000 * 60 * 60 * 24));
+        if (getDuration().getLength() > 3 && daysLeftForTaskCompletion >= 0) {
+          if (daysLeftForTaskCompletion < getDuration().getLength() / 3) {
+            result = VERY_URGENT_COLOR;
+          } else if (daysLeftForTaskCompletion < getDuration().getLength() * 2 / 3) {
+            result = URGENT_COLOR;
+          } else {
+            result = NON_URGENT_COLOR;}
+        }
+        else {
+          switch (daysLeftForTaskCompletion) {
+            case 1:
               result = VERY_URGENT_COLOR;
-            } else if (daysLeftForTaskCompletion < getDuration().getLength() * 2 / 3) {
+              break;
+            case 3:
+              result = NON_URGENT_COLOR;
+              break;
+            default:
               result = URGENT_COLOR;
-            } else {
-              result = NON_URGENT_COLOR;}
-          }
-          else {
-            switch (daysLeftForTaskCompletion) {
-              case 1:
-                result = VERY_URGENT_COLOR;
-                break;
-              case 3:
-                result = NON_URGENT_COLOR;
-                break;
-              default:
-                result = URGENT_COLOR;
-                break;
-            }
+              break;
           }
         }
+      }
+    }
+    else if (result == null) {
+      if (isMilestone() || myManager.getTaskHierarchy().hasNestedTasks(this)) {
+        result = Color.BLACK;
+      }
+      else {
+        result = myManager.getConfig().getDefaultColor();
       }
     }
     return result;
@@ -1036,7 +1041,7 @@ public class TaskImpl implements Task {
     adjustNestedTasks();
 
     GregorianCalendar today = new GregorianCalendar();
-    if(this.myCompletionPercentage == 0 && mySlack > 0 && myStart.compareTo(today) < 0){
+    if(myManager.isAutoShiftDatesOn() && this.myCompletionPercentage == 0 && mySlack > 0 && myStart.compareTo(today) < 0){
       closestWorkingStart = myManager.findClosestWorkingTime(today.getTime());
       Date newDate = shiftDate(closestWorkingStart, getDuration());
       Date closestWorkingEnd = myManager.findClosestWorkingTime(newDate);

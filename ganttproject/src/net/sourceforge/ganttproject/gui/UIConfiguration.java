@@ -63,6 +63,7 @@ public class UIConfiguration {
 
   private final AlphaRenderingOption myWeekendAlphaRenderingOption;
   private final RedlineOption myRedlineOption = new RedlineOption();
+
   private BooleanOption myProjectDatesOption = new DefaultBooleanOption("showProjectDates");
 
   private FontOption myChartFontOption;

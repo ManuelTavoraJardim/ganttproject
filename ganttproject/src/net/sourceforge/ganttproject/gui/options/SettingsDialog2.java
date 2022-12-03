@@ -61,7 +61,7 @@ public class SettingsDialog2 extends AbstractPagesDialog {
     return getListItems(ourProviders, pageOrderKey, project, uiFacade);
   }
 
-  private static List<ListItem> getListItems(List<OptionPageProvider> providers, String pageOrderKey,
+  private static List<ListItem> getListItems(List<OptionPageProvider> providers, String pageOrderKey,   // Builds option page
       IGanttProject project, UIFacade uiFacade) {
     Map<String, OptionPageProvider> pageId_provider = new HashMap<String, OptionPageProvider>();
     for (OptionPageProvider p : providers) {

@@ -49,7 +49,7 @@ public class EditMenu extends JMenu {
     add(viewManager.getCopyAction());
     add(viewManager.getPasteAction());
     addSeparator();
-    add(new SettingsDialogAction(project, uiFacade));
+    add(new SettingsDialogAction(project, uiFacade)); // Option which leads to settings
     setToolTipText(null);
   }
 

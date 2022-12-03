@@ -40,11 +40,11 @@ public class SettingsDialogAction extends GPAction {
   }
 
   @Override
-  public void actionPerformed(ActionEvent e) {
+  public void actionPerformed(ActionEvent e) {    // When settings is selected
     if (calledFromAppleScreenMenu(e)) {
       return;
     }
-    SettingsDialog2 dialog = new SettingsDialog2(myProject, myUiFacade, "settings.app.pageOrder");
+    SettingsDialog2 dialog = new SettingsDialog2(myProject, myUiFacade, "settings.app.pageOrder");  // Settings page
     dialog.show();
   }
 }
