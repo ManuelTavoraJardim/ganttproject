@@ -352,7 +352,7 @@ public class TaskImpl implements Task {
 
   @Override
   public GanttCalendar getStart() {
-
+/*
     GregorianCalendar today = new GregorianCalendar();
 
     //int durationInMillis = getDuration().getLength() * 1000*60*60*24;
@@ -377,13 +377,12 @@ public class TaskImpl implements Task {
     }else
     return myStart;
 
-    /*
+    */
 
     if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
         return myMutator.getStart();
       }
       return myStart;
-*/
   }
 
   @Override
@@ -402,8 +401,8 @@ public class TaskImpl implements Task {
     }
     GregorianCalendar today = new GregorianCalendar();
     if(this.myCompletionPercentage != 100 && mySlack != 0 && myEnd.compareTo(today) < 0) {
-      today.setTimeInMillis((today.getTimeInMillis()) + 1000*60*60*24);
-      myEnd.setTimeInMillis(today.getTimeInMillis());
+      Date newEnd = myManager.findClosestWorkingTime(today.getTime());
+      myEnd.setTime(newEnd);
       setEnd(myEnd);
       return myEnd;
     }
@@ -1030,11 +1029,20 @@ public class TaskImpl implements Task {
 
   @Override
   public void setStart(GanttCalendar start) {
-      Date closestWorkingStart = myManager.findClosestWorkingTime(start.getTime());
-      start.setTime(closestWorkingStart);
-      myStart = start;
-      recalculateActivities();
-      adjustNestedTasks();
+    Date closestWorkingStart = myManager.findClosestWorkingTime(start.getTime());
+    start.setTime(closestWorkingStart);
+    myStart = start;
+    recalculateActivities();
+    adjustNestedTasks();
+
+    GregorianCalendar today = new GregorianCalendar();
+    if(this.myCompletionPercentage == 0 && mySlack > 0 && myStart.compareTo(today) < 0){
+      closestWorkingStart = myManager.findClosestWorkingTime(today.getTime());
+      Date newDate = shiftDate(closestWorkingStart, getDuration());
+      Date closestWorkingEnd = myManager.findClosestWorkingTime(newDate);
+      myStart.setTime(closestWorkingStart);
+      myEnd.setTime(closestWorkingEnd);
+    }
   }
 
   private void adjustNestedTasks() {
