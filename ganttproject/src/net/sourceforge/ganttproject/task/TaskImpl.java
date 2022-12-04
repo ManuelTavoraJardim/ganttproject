@@ -387,7 +387,6 @@ public class TaskImpl implements Task {
 
   @Override
   public GanttCalendar getEnd() {
-    // TODO: se passar do ultimo dia e a percentagem de completude for != 100% e houver slack, aumenta a duracao 1 dia, assim como a data final
 
     GanttCalendar result = null;
     if (myMutator != null && myMutator.myIsolationLevel == TaskMutator.READ_UNCOMMITED) {
@@ -396,15 +395,16 @@ public class TaskImpl implements Task {
     if (result == null) {
       if (myEnd == null) {
         myEnd = calculateEnd();
+        setStart(myStart);
+
+        GregorianCalendar today = new GregorianCalendar();
+        if(myManager.isAutoShiftDatesOn() &&  mySlack > 0 && myEnd.compareTo(today) < 0 && this.myCompletionPercentage != 100 && this.myCompletionPercentage > 0) {
+          Date newEnd = myManager.findClosestWorkingTime(today.getTime());
+          myEnd.setTime(newEnd);
+          setEnd(myEnd);
+        }
       }
       result = myEnd;
-    }
-    GregorianCalendar today = new GregorianCalendar();
-    if(myManager.isAutoShiftDatesOn() && this.myCompletionPercentage != 100 && this.myCompletionPercentage > 0 && mySlack != 0 && myEnd.compareTo(today) < 0) {
-      Date newEnd = myManager.findClosestWorkingTime(today.getTime());
-      myEnd.setTime(newEnd);
-      setEnd(myEnd);
-      return myEnd;
     }
     return result;
   }
