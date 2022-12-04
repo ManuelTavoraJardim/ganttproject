@@ -489,6 +489,29 @@ public class TaskImpl implements Task {
     return myShape;
   }
 
+  private Color updateColor(GanttCalendar todayDateGregCal) {
+    int daysLeftForTaskCompletion = (int)((getEnd().getTimeInMillis() - todayDateGregCal.getTimeInMillis()) / (1000 * 60 * 60 * 24));
+    if(daysLeftForTaskCompletion >= 0 && getDuration().getLength() > 3) {
+      if (daysLeftForTaskCompletion < getDuration().getLength() / 3) {
+        return VERY_URGENT_COLOR;
+      } else if (daysLeftForTaskCompletion < getDuration().getLength() * 2 / 3) {
+        return URGENT_COLOR;
+      } else {
+        return NON_URGENT_COLOR;
+      }
+    }
+    else {
+      switch (daysLeftForTaskCompletion) {
+        case 1:
+          return VERY_URGENT_COLOR;
+        case 3:
+          return NON_URGENT_COLOR;
+        default:
+          return URGENT_COLOR;
+      }
+    }
+  }
+
   @Override
   public Color getColor() {
     Color result = myColor;
@@ -497,28 +520,7 @@ public class TaskImpl implements Task {
       if (todayDateGregCal.compareTo(getStart()) < 0 || todayDateGregCal.compareTo(getEnd()) >= 0) {
         result = myManager.getConfig().getDefaultColor();
       } else {
-        int daysLeftForTaskCompletion = (int)((getEnd().getTimeInMillis() - todayDateGregCal.getTimeInMillis()) / (1000 * 60 * 60 * 24));
-        if (getDuration().getLength() > 3 && daysLeftForTaskCompletion >= 0) {
-          if (daysLeftForTaskCompletion < getDuration().getLength() / 3) {
-            result = VERY_URGENT_COLOR;
-          } else if (daysLeftForTaskCompletion < getDuration().getLength() * 2 / 3) {
-            result = URGENT_COLOR;
-          } else {
-            result = NON_URGENT_COLOR;}
-        }
-        else {
-          switch (daysLeftForTaskCompletion) {
-            case 1:
-              result = VERY_URGENT_COLOR;
-              break;
-            case 3:
-              result = NON_URGENT_COLOR;
-              break;
-            default:
-              result = URGENT_COLOR;
-              break;
-          }
-        }
+        result = updateColor(todayDateGregCal);
       }
     }
     else if (result == null) {
